@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntonELApp</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .app-header {
+            background-color: #16a34a;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px; /* Increased height for better centering */
+        }
+        .app-header h1 {
+            margin: 0;
+            font-size: 2rem; /* Increased font size */
+        }
+        .app-content {
+            padding: 1rem;
+        }
+        .text-display {
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .text-display p {
+            margin: 0.5rem 0;
+            color: #15803d;
+            font-weight: bold;
+        }
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+        .key {
+            background-color: #22c55e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .key:hover {
+            background-color: #16a34a;
+        }
+        .space-key {
+            background-color: #3b82f6;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+        .space-key:hover {
+            background-color: #2563eb;
+        }
+        .function-keys {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .alarm-key {
+            background-color: #dc2626;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            padding: 0.75rem;
+        }
+        .alarm-key:hover {
+            background-color: #b91c1c;
+        }
+        .alarm-key:disabled {
+            background-color: #f87171;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>AntonELApp</h1>
+        </header>
+        <main class="app-content">
+            <div class="text-display">
+                <p>Palabra actual: <span id="current-word"></span></p>
+                <p>Frase actual: <span id="current-phrase"></span></p>
+            </div>
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <button class="key">Q</button>
+                    <button class="key">W</button>
+                    <button class="key">E</button>
+                    <button class="key">R</button>
+                    <button class="key">T</button>
+                    <button class="key">Y</button>
+                    <button class="key">U</button>
+                    <button class="key">I</button>
+                    <button class="key">O</button>
+                    <button class="key">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">A</button>
+                    <button class="key">S</button>
+                    <button class="key">D</button>
+                    <button class="key">F</button>
+                    <button class="key">G</button>
+                    <button class="key">H</button>
+                    <button class="key">J</button>
+                    <button class="key">K</button>
+                    <button class="key">L</button>
+                    <button class="key">Ñ</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">Z</button>
+                    <button class="key">X</button>
+                    <button class="key">C</button>
+                    <button class="key">V</button>
+                    <button class="key">B</button>
+                    <button class="key">N</button>
+                    <button class="key">M</button>
+                </div>
+            </div>
+            <button class="key space-key">Espacio</button>
+            <div class="function-keys">
+                <button class="key" id="delete-letter">Borrar Letra</button>
+                <button class="key" id="delete-word">Borrar Palabra</button>
+                <button class="key" id="delete-phrase">Borrar Frase</button>
+                <button class="key" id="read-phrase">Leer Frase</button>
+            </div>
+            <button class="key alarm-key" id="alarm-button">AVISO</button>
+        </main>
+    </div>
+    <script>
+        let currentWord = '';
+        let currentPhrase = '';
+        let isAlarmPlaying = false;
+        let audioContext = null;
+
+        const currentWordElement = document.getElementById('current-word');
+        const currentPhraseElement = document.getElementById('current-phrase');
+        const alarmButton = document.getElementById('alarm-button');
+
+        function updateDisplay() {
+            currentWordElement.textContent = currentWord;
+            currentPhraseElement.textContent = currentPhrase;
+        }
+
+        document.querySelectorAll('.key:not(.space-key):not(.alarm-key)').forEach(key => {
+            key.addEventListener('click', () => {
+                currentWord += key.textContent;
+                updateDisplay();
+            });
+        });
+
+        document.querySelector('.space-key').addEventListener('click', () => {
+            currentPhrase += (currentPhrase ? ' ' : '') + currentWord;
+            currentWord = '';
+            updateDisplay();
+        });
+
+        document.getElementById('delete-letter').addEventListener('click', () => {
+            currentWord = currentWord.slice(0, -1);
+            updateDisplay();
+        });
+
+        document.getElementById('delete-word').addEventListener('click', () => {
+            currentWord = '';
+            updateDisplay();
+        });
+
+        document.getElementById('delete-phrase').addEventListener('click', () => {
+            currentPhrase = '';
+            currentWord = '';
+            updateDisplay();
+        });
+
+        document.getElementById('read-phrase').addEventListener('click', () => {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentPhrase);
+                utterance.lang = 'es-ES';
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('La síntesis de voz no está soportada en este navegador.');
+            }
+            currentPhrase = '';
+            currentWord = '';
+            updateDisplay();
+        });
+
+        alarmButton.addEventListener('click', () => {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            if (!isAlarmPlaying) {
+                isAlarmPlaying = true;
+                alarmButton.textContent = 'ALARMA SONANDO';
+                alarmButton.disabled = true;
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+
+                gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+
+                oscillator.start();
+
+                let isHigh = true;
+                const intervalId = setInterval(() => {
+                    oscillator.frequency.setValueAtTime(isHigh ? 880 : 440, audioContext.currentTime);
+                    isHigh = !isHigh;
+                }, 100);
+
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    oscillator.stop();
+                    isAlarmPlaying = false;
+                    alarmButton.textContent = 'AVISO';
+                    alarmButton.disabled = false;
+                }, 5000);
+            }
+        });
+
+        updateDisplay();
+    </script>
+</body>
+</html>
