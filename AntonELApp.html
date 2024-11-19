@@ -1,144 +1,298 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AntonELApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const commonWords = ['el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'ser', 'se', 'no', 'haber', 'por', 'con', 'su', 'para', 'como', 'estar', 'tener', 'le'];
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            padding-bottom: 50px;
+        }
 
-const SpeechAssistApp = () => {
-  const [currentWord, setCurrentWord] = useState('');
-  const [currentPhrase, setCurrentPhrase] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [audioContext, setAudioContext] = useState(null);
-  const [isAlarmPlaying, setIsAlarmPlaying] = useState(false);
+        .header {
+            background: #16a34a;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
 
-  useEffect(() => {
-    setAudioContext(new (window.AudioContext || window.webkitAudioContext)());
-  }, []);
+        .header h1 {
+            font-size: 2em;
+        }
 
-  useEffect(() => {
-    if (currentWord.length > 1) {
-      const newSuggestions = commonWords.filter(word => word.startsWith(currentWord.toLowerCase()));
-      setSuggestions(newSuggestions.slice(0, 3));
-    } else {
-      setSuggestions([]);
-    }
-  }, [currentWord]);
+        .display {
+            background: #f0f0f0;
+            margin: 10px;
+            padding: 15px;
+            border-radius: 8px;
+        }
 
-  const handleLetterClick = (letter) => {
-    setCurrentWord(prev => prev + letter);
-  };
+        .display p {
+            margin: 5px 0;
+            font-size: 1.2em;
+            color: #16a34a;
+        }
 
-  const handleSpaceClick = () => {
-    setCurrentPhrase(prev => prev + (prev ? ' ' : '') + currentWord);
-    setCurrentWord('');
-  };
+        .keyboard {
+            padding: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-  const handleDeleteLetter = () => {
-    setCurrentWord(prev => prev.slice(0, -1));
-  };
+        .row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 5px;
+        }
 
-  const handleDeleteWord = () => {
-    setCurrentWord('');
-  };
+        .key {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5em;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-  const handleDeletePhrase = () => {
-    setCurrentPhrase('');
-    setCurrentWord('');
-  };
+        @media (min-width: 768px) {
+            .key {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8em;
+            }
+        }
 
-  const handleReadPhrase = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(currentPhrase);
-      utterance.lang = 'es-ES';
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('La síntesis de voz no está soportada en este navegador.');
-    }
-    handleDeletePhrase();
-  };
+        .space {
+            width: 100%;
+            background: #3b82f6;
+            margin: 10px 0;
+            height: 60px;
+        }
 
-  const playAlarm = useCallback(() => {
-    if (audioContext && !isAlarmPlaying) {
-      setIsAlarmPlaying(true);
-      
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+        .function-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+        .function-key {
+            height: 60px;
+            font-size: 1.2em;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        .alarm {
+            width: calc(100% - 20px);
+            margin: 10px;
+            height: 70px;
+            font-size: 1.5em;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-      gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+        .watermark {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 10px;
+            background: #f0f0f0;
+            color: #16a34a;
+            font-size: 1em;
+            border-top: 1px solid #ddd;
+        }
 
-      oscillator.start();
+        button:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AntonELApp</h1>
+    </div>
 
-      let isHigh = true;
-      const intervalId = setInterval(() => {
-        oscillator.frequency.setValueAtTime(isHigh ? 880 : 440, audioContext.currentTime);
-        isHigh = !isHigh;
-      }, 100);
+    <div class="display">
+        <p>Palabra actual: <span id="currentWord"></span></p>
+        <p>Frase actual: <span id="currentPhrase"></span></p>
+    </div>
 
-      setTimeout(() => {
-        clearInterval(intervalId);
-        oscillator.stop();
-        setIsAlarmPlaying(false);
-      }, 5000);
-    }
-  }, [audioContext, isAlarmPlaying]);
-
-  const keyboard = [
-    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
-    ['Z', 'X', 'C', 'V', 'B', 'N', 'M']
-  ];
-
-  return (
-    <Card className="w-full max-w-3xl mx-auto bg-white">
-      <CardHeader className="bg-green-600 text-white">
-        <CardTitle className="text-2xl font-bold">AntonELApp</CardTitle>
-      </CardHeader>
-      <CardContent className="p-4">
-        <div className="bg-gray-100 p-4 mb-4 rounded-md shadow">
-          <p className="font-semibold text-green-700">Palabra actual: <span className="font-normal">{currentWord}</span></p>
-          <p className="font-semibold text-green-700">Frase actual: <span className="font-normal">{currentPhrase}</span></p>
+    <div class="keyboard">
+        <div class="row">
+            <button class="key">Q</button>
+            <button class="key">W</button>
+            <button class="key">E</button>
+            <button class="key">R</button>
+            <button class="key">T</button>
+            <button class="key">Y</button>
+            <button class="key">U</button>
+            <button class="key">I</button>
+            <button class="key">O</button>
+            <button class="key">P</button>
         </div>
-        {keyboard.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center mb-2">
-            {row.map((letter) => (
-              <Button
-                key={letter}
-                onClick={() => handleLetterClick(letter)}
-                className="mx-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              >
-                {letter}
-              </Button>
-            ))}
-          </div>
-        ))}
-        <Button
-          onClick={handleSpaceClick}
-          className="w-full my-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Espacio
-        </Button>
-        <div className="grid grid-cols-2 gap-2 mt-4">
-          <Button onClick={handleDeleteLetter} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Borrar Letra</Button>
-          <Button onClick={handleDeleteWord} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Borrar Palabra</Button>
-          <Button onClick={handleDeletePhrase} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Borrar Frase</Button>
-          <Button onClick={handleReadPhrase} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Leer Frase</Button>
+        <div class="row">
+            <button class="key">A</button>
+            <button class="key">S</button>
+            <button class="key">D</button>
+            <button class="key">F</button>
+            <button class="key">G</button>
+            <button class="key">H</button>
+            <button class="key">J</button>
+            <button class="key">K</button>
+            <button class="key">L</button>
+            <button class="key">Ñ</button>
         </div>
-        <Button
-          onClick={playAlarm}
-          disabled={isAlarmPlaying}
-          className={`w-full mt-4 ${isAlarmPlaying ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'} text-white font-bold py-3 px-4 rounded text-xl`}
-        >
-          {isAlarmPlaying ? 'ALARMA SONANDO' : 'AVISO'}
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
+        <div class="row">
+            <button class="key">Z</button>
+            <button class="key">X</button>
+            <button class="key">C</button>
+            <button class="key">V</button>
+            <button class="key">B</button>
+            <button class="key">N</button>
+            <button class="key">M</button>
+        </div>
+        <button class="key space">Espacio</button>
+    </div>
 
-export default SpeechAssistApp;
+    <div class="function-buttons">
+        <button class="function-key" id="deleteLetter">Borrar Letra</button>
+        <button class="function-key" id="deleteWord">Borrar Palabra</button>
+        <button class="function-key" id="deletePhrase">Borrar Frase</button>
+        <button class="function-key" id="readPhrase">Leer Frase</button>
+    </div>
+
+    <button class="alarm" id="alarmButton">AVISO</button>
+
+    <div class="watermark">
+        Creado por @campstechnology
+    </div>
+
+    <script>
+        let currentWord = '';
+        let currentPhrase = '';
+        let isAlarmPlaying = false;
+
+        // Elementos del DOM
+        const currentWordSpan = document.getElementById('currentWord');
+        const currentPhraseSpan = document.getElementById('currentPhrase');
+        const alarmButton = document.getElementById('alarmButton');
+
+        // Función para actualizar el display
+        function updateDisplay() {
+            currentWordSpan.textContent = currentWord;
+            currentPhraseSpan.textContent = currentPhrase;
+        }
+
+        // Letras del teclado
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('click', () => {
+                if (!key.classList.contains('space')) {
+                    currentWord += key.textContent;
+                    updateDisplay();
+                }
+            });
+        });
+
+        // Espacio
+        document.querySelector('.space').addEventListener('click', () => {
+            if (currentWord) {
+                currentPhrase += (currentPhrase ? ' ' : '') + currentWord;
+                currentWord = '';
+                updateDisplay();
+            }
+        });
+
+        // Borrar letra
+        document.getElementById('deleteLetter').addEventListener('click', () => {
+            currentWord = currentWord.slice(0, -1);
+            updateDisplay();
+        });
+
+        // Borrar palabra
+        document.getElementById('deleteWord').addEventListener('click', () => {
+            currentWord = '';
+            updateDisplay();
+        });
+
+        // Borrar frase
+        document.getElementById('deletePhrase').addEventListener('click', () => {
+            currentWord = '';
+            currentPhrase = '';
+            updateDisplay();
+        });
+
+        // Leer frase
+        document.getElementById('readPhrase').addEventListener('click', () => {
+            if (currentPhrase && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentPhrase);
+                utterance.lang = 'es-ES';
+                speechSynthesis.speak(utterance);
+            }
+        });
+
+        // Alarma
+        alarmButton.addEventListener('click', () => {
+            if (isAlarmPlaying) return;
+
+            isAlarmPlaying = true;
+            alarmButton.textContent = 'ALARMA SONANDO';
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+
+            oscillator.start();
+
+            let isHigh = true;
+            const intervalId = setInterval(() => {
+                oscillator.frequency.setValueAtTime(isHigh ? 880 : 440, audioContext.currentTime);
+                isHigh = !isHigh;
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(intervalId);
+                oscillator.stop();
+                isAlarmPlaying = false;
+                alarmButton.textContent = 'AVISO';
+            }, 3000);
+        });
+
+        // Prevenir zoom en iOS
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
