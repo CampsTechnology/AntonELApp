@@ -2,271 +2,266 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AntonELApp</title>
     <style>
         * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: white;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
-
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            max-width: 800px;
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
             margin: 0 auto;
-            padding-bottom: 60px;
+            overflow: hidden;
         }
-
-        .header {
-            background: #16a34a;
+        .app-header {
+            background-color: #16a34a;
             color: white;
-            padding: 20px;
+            padding: 0.5rem;
             text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
         }
-
-        .display {
-            background: #f3f4f6;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
         }
-
-        .display p {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #16a34a;
+        .app-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0.5rem;
+            overflow-y: auto;
         }
-
+        .text-display {
+            background-color: #f3f4f6;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .text-display p {
+            margin: 0.25rem 0;
+            color: #15803d;
+            font-weight: bold;
+        }
         .keyboard {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 0.25rem;
         }
-
         .keyboard-row {
             display: flex;
             justify-content: center;
-            gap: 5px;
+            gap: 0.25rem;
         }
-
-        .btn {
-            padding: 15px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            background: #22c55e;
+        .key {
+            background-color: #22c55e;
             color: white;
+            border: none;
+            padding: 0.5rem;
+            font-size: 0.9rem;
             cursor: pointer;
+            border-radius: 4px;
             touch-action: manipulation;
+            flex: 1;
+            min-width: 0;
         }
-
-        .btn:active {
-            transform: scale(0.95);
+        .key:active {
+            background-color: #16a34a;
         }
-
-        .space {
+        .space-key {
+            background-color: #3b82f6;
             width: 100%;
-            background: #3b82f6;
-            margin: 10px 0;
+            margin: 0.25rem 0;
         }
-
-        .controls {
+        .space-key:active {
+            background-color: #2563eb;
+        }
+        .function-keys {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.25rem;
+            margin-top: 0.5rem;
         }
-
-        .alarm {
+        .alarm-key {
+            background-color: #dc2626;
             width: 100%;
-            background: #dc2626;
-            font-size: 24px;
-            padding: 20px;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            padding: 0.5rem;
         }
-
-        .watermark {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            padding: 10px;
-            background: #f3f4f6;
-            color: #16a34a;
-            border-top: 1px solid #ddd;
+        .alarm-key:active {
+            background-color: #b91c1c;
         }
-
-        @media (min-width: 768px) {
-            .btn {
-                padding: 20px 25px;
-                font-size: 22px;
-            }
+        .alarm-key:disabled {
+            background-color: #f87171;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>AntonELApp</h1>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>AntonELApp</h1>
+        </header>
+        <main class="app-content">
+            <div class="text-display">
+                <p>Palabra actual: <span id="current-word"></span></p>
+                <p>Frase actual: <span id="current-phrase"></span></p>
+            </div>
+            <div class="keyboard">
+                <div class="keyboard-row">
+                    <button class="key">Q</button>
+                    <button class="key">W</button>
+                    <button class="key">E</button>
+                    <button class="key">R</button>
+                    <button class="key">T</button>
+                    <button class="key">Y</button>
+                    <button class="key">U</button>
+                    <button class="key">I</button>
+                    <button class="key">O</button>
+                    <button class="key">P</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">A</button>
+                    <button class="key">S</button>
+                    <button class="key">D</button>
+                    <button class="key">F</button>
+                    <button class="key">G</button>
+                    <button class="key">H</button>
+                    <button class="key">J</button>
+                    <button class="key">K</button>
+                    <button class="key">L</button>
+                    <button class="key">Ñ</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">Z</button>
+                    <button class="key">X</button>
+                    <button class="key">C</button>
+                    <button class="key">V</button>
+                    <button class="key">B</button>
+                    <button class="key">N</button>
+                    <button class="key">M</button>
+                </div>
+            </div>
+            <button class="key space-key">Espacio</button>
+            <div class="function-keys">
+                <button class="key" id="delete-letter">Borrar Letra</button>
+                <button class="key" id="delete-word">Borrar Palabra</button>
+                <button class="key" id="delete-phrase">Borrar Frase</button>
+                <button class="key" id="read-phrase">Leer Frase</button>
+            </div>
+            <button class="key alarm-key" id="alarm-button">AVISO</button>
+        </main>
     </div>
-
-    <div class="display">
-        <p>Palabra actual: <span id="word"></span></p>
-        <p>Frase actual: <span id="phrase"></span></p>
-    </div>
-
-    <div class="keyboard">
-        <div class="keyboard-row">
-            <button class="btn">Q</button>
-            <button class="btn">W</button>
-            <button class="btn">E</button>
-            <button class="btn">R</button>
-            <button class="btn">T</button>
-            <button class="btn">Y</button>
-            <button class="btn">U</button>
-            <button class="btn">I</button>
-            <button class="btn">O</button>
-            <button class="btn">P</button>
-        </div>
-        <div class="keyboard-row">
-            <button class="btn">A</button>
-            <button class="btn">S</button>
-            <button class="btn">D</button>
-            <button class="btn">F</button>
-            <button class="btn">G</button>
-            <button class="btn">H</button>
-            <button class="btn">J</button>
-            <button class="btn">K</button>
-            <button class="btn">L</button>
-            <button class="btn">Ñ</button>
-        </div>
-        <div class="keyboard-row">
-            <button class="btn">Z</button>
-            <button class="btn">X</button>
-            <button class="btn">C</button>
-            <button class="btn">V</button>
-            <button class="btn">B</button>
-            <button class="btn">N</button>
-            <button class="btn">M</button>
-        </div>
-        <button class="btn space">Espacio</button>
-    </div>
-
-    <div class="controls">
-        <button class="btn" id="delete-letter">Borrar Letra</button>
-        <button class="btn" id="delete-word">Borrar Palabra</button>
-        <button class="btn" id="delete-phrase">Borrar Frase</button>
-        <button class="btn" id="read">Leer Frase</button>
-    </div>
-
-    <button class="btn alarm" id="alarm">AVISO</button>
-
-    <div class="watermark">
-        Creado por @campstechnology
-    </div>
-
     <script>
         let currentWord = '';
         let currentPhrase = '';
-        const wordDisplay = document.getElementById('word');
-        const phraseDisplay = document.getElementById('phrase');
+        let isAlarmPlaying = false;
+        let audioContext = null;
+
+        const currentWordElement = document.getElementById('current-word');
+        const currentPhraseElement = document.getElementById('current-phrase');
+        const alarmButton = document.getElementById('alarm-button');
 
         function updateDisplay() {
-            wordDisplay.textContent = currentWord;
-            phraseDisplay.textContent = currentPhrase;
+            currentWordElement.textContent = currentWord;
+            currentPhraseElement.textContent = currentPhrase;
         }
 
-        // Letras
-        document.querySelectorAll('.keyboard .btn').forEach(button => {
-            if (!button.classList.contains('space')) {
-                button.addEventListener('click', () => {
-                    currentWord += button.textContent;
-                    updateDisplay();
-                });
-            }
-        });
-
-        // Espacio
-        document.querySelector('.space').addEventListener('click', () => {
-            if (currentWord) {
-                currentPhrase += (currentPhrase ? ' ' : '') + currentWord;
-                currentWord = '';
+        document.querySelectorAll('.key:not(.space-key):not(.alarm-key)').forEach(key => {
+            key.addEventListener('click', () => {
+                currentWord += key.textContent;
                 updateDisplay();
-            }
+            });
         });
 
-        // Borrar letra
+        document.querySelector('.space-key').addEventListener('click', () => {
+            currentPhrase += (currentPhrase ? ' ' : '') + currentWord;
+            currentWord = '';
+            updateDisplay();
+        });
+
         document.getElementById('delete-letter').addEventListener('click', () => {
             currentWord = currentWord.slice(0, -1);
             updateDisplay();
         });
 
-        // Borrar palabra
         document.getElementById('delete-word').addEventListener('click', () => {
             currentWord = '';
             updateDisplay();
         });
 
-        // Borrar frase
         document.getElementById('delete-phrase').addEventListener('click', () => {
-            currentWord = '';
             currentPhrase = '';
+            currentWord = '';
             updateDisplay();
         });
 
-        // Leer frase
-        document.getElementById('read').addEventListener('click', () => {
-            if (currentPhrase && 'speechSynthesis' in window) {
+        document.getElementById('read-phrase').addEventListener('click', () => {
+            if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(currentPhrase);
                 utterance.lang = 'es-ES';
-                speechSynthesis.speak(utterance);
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('La síntesis de voz no está soportada en este navegador.');
             }
         });
 
-        // Alarma
-        let isPlaying = false;
-        let audioContext = null;
-
-        document.getElementById('alarm').addEventListener('click', () => {
-            if (isPlaying) return;
-            
+        alarmButton.addEventListener('click', () => {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
+            
+            if (!isAlarmPlaying) {
+                isAlarmPlaying = true;
+                alarmButton.textContent = 'ALARMA SONANDO';
+                alarmButton.disabled = true;
 
-            isPlaying = true;
-            const button = document.getElementById('alarm');
-            button.textContent = 'ALARMA SONANDO';
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
 
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(1, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(1, audioContext.currentTime);
 
-            oscillator.start();
+                oscillator.start();
 
-            let isHigh = true;
-            const intervalId = setInterval(() => {
-                oscillator.frequency.setValueAtTime(isHigh ? 880 : 440, audioContext.currentTime);
-                isHigh = !isHigh;
-            }, 100);
+                let isHigh = true;
+                const intervalId = setInterval(() => {
+                    oscillator.frequency.setValueAtTime(isHigh ? 880 : 440, audioContext.currentTime);
+                    isHigh = !isHigh;
+                }, 100);
 
-            setTimeout(() => {
-                clearInterval(intervalId);
-                oscillator.stop();
-                isPlaying = false;
-                button.textContent = 'AVISO';
-            }, 3000);
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    oscillator.stop();
+                    isAlarmPlaying = false;
+                    alarmButton.textContent = 'AVISO';
+                    alarmButton.disabled = false;
+                }, 5000);
+            }
         });
+
+        updateDisplay();
     </script>
 </body>
 </html>
