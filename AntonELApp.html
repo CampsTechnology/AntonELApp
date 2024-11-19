@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AntonELApp</title>
     <style>
         * {
@@ -13,40 +13,32 @@
 
         body {
             font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background-color: white;
-        }
-
-        .app-container {
+            padding: 20px;
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding-bottom: 60px;
         }
 
         .header {
-            background-color: #16a34a;
+            background: #16a34a;
             color: white;
             padding: 20px;
             text-align: center;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
 
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
-        }
-
         .display {
-            background-color: #f3f4f6;
-            padding: 15px;
+            background: #f3f4f6;
+            padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
         }
 
         .display p {
+            font-size: 18px;
             margin: 10px 0;
             color: #16a34a;
-            font-weight: bold;
         }
 
         .keyboard {
@@ -62,78 +54,58 @@
             gap: 5px;
         }
 
-        .key {
-            width: 45px;
-            height: 45px;
-            background-color: #22c55e;
+        .btn {
+            padding: 15px 20px;
+            font-size: 18px;
             border: none;
             border-radius: 8px;
+            background: #22c55e;
             color: white;
-            font-size: 18px;
-            font-weight: bold;
             cursor: pointer;
+            touch-action: manipulation;
         }
 
-        @media (min-width: 768px) {
-            .key {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
+        .btn:active {
+            transform: scale(0.95);
         }
 
-        .key:active {
-            background-color: #16a34a;
-        }
-
-        .space-key {
+        .space {
             width: 100%;
-            background-color: #3b82f6;
+            background: #3b82f6;
             margin: 10px 0;
         }
 
-        .function-keys {
+        .controls {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        .function-key {
-            padding: 15px;
-            background-color: #22c55e;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .alarm-key {
+        .alarm {
             width: 100%;
+            background: #dc2626;
+            font-size: 24px;
             padding: 20px;
-            background-color: #dc2626;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
         }
 
         .watermark {
-            text-align: center;
-            padding: 10px;
-            background-color: #f3f4f6;
-            color: #16a34a;
-            font-size: 14px;
-            font-weight: bold;
             position: fixed;
             bottom: 0;
-            width: 100%;
-            border-top: 1px solid #e5e7eb;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 10px;
+            background: #f3f4f6;
+            color: #16a34a;
+            border-top: 1px solid #ddd;
+        }
+
+        @media (min-width: 768px) {
+            .btn {
+                padding: 20px 25px;
+                font-size: 22px;
+            }
         }
     </style>
 </head>
@@ -142,58 +114,56 @@
         <h1>AntonELApp</h1>
     </div>
 
-    <div class="app-container">
-        <div class="display">
-            <p>Palabra actual: <span id="current-word"></span></p>
-            <p>Frase actual: <span id="current-phrase"></span></p>
-        </div>
-
-        <div class="keyboard">
-            <div class="keyboard-row">
-                <button class="key">Q</button>
-                <button class="key">W</button>
-                <button class="key">E</button>
-                <button class="key">R</button>
-                <button class="key">T</button>
-                <button class="key">Y</button>
-                <button class="key">U</button>
-                <button class="key">I</button>
-                <button class="key">O</button>
-                <button class="key">P</button>
-            </div>
-            <div class="keyboard-row">
-                <button class="key">A</button>
-                <button class="key">S</button>
-                <button class="key">D</button>
-                <button class="key">F</button>
-                <button class="key">G</button>
-                <button class="key">H</button>
-                <button class="key">J</button>
-                <button class="key">K</button>
-                <button class="key">L</button>
-                <button class="key">Ñ</button>
-            </div>
-            <div class="keyboard-row">
-                <button class="key">Z</button>
-                <button class="key">X</button>
-                <button class="key">C</button>
-                <button class="key">V</button>
-                <button class="key">B</button>
-                <button class="key">N</button>
-                <button class="key">M</button>
-            </div>
-            <button class="key space-key">Espacio</button>
-        </div>
-
-        <div class="function-keys">
-            <button class="function-key" id="delete-letter">Borrar Letra</button>
-            <button class="function-key" id="delete-word">Borrar Palabra</button>
-            <button class="function-key" id="delete-phrase">Borrar Frase</button>
-            <button class="function-key" id="read-phrase">Leer Frase</button>
-        </div>
-
-        <button class="alarm-key" id="alarm-button">AVISO</button>
+    <div class="display">
+        <p>Palabra actual: <span id="word"></span></p>
+        <p>Frase actual: <span id="phrase"></span></p>
     </div>
+
+    <div class="keyboard">
+        <div class="keyboard-row">
+            <button class="btn">Q</button>
+            <button class="btn">W</button>
+            <button class="btn">E</button>
+            <button class="btn">R</button>
+            <button class="btn">T</button>
+            <button class="btn">Y</button>
+            <button class="btn">U</button>
+            <button class="btn">I</button>
+            <button class="btn">O</button>
+            <button class="btn">P</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="btn">A</button>
+            <button class="btn">S</button>
+            <button class="btn">D</button>
+            <button class="btn">F</button>
+            <button class="btn">G</button>
+            <button class="btn">H</button>
+            <button class="btn">J</button>
+            <button class="btn">K</button>
+            <button class="btn">L</button>
+            <button class="btn">Ñ</button>
+        </div>
+        <div class="keyboard-row">
+            <button class="btn">Z</button>
+            <button class="btn">X</button>
+            <button class="btn">C</button>
+            <button class="btn">V</button>
+            <button class="btn">B</button>
+            <button class="btn">N</button>
+            <button class="btn">M</button>
+        </div>
+        <button class="btn space">Espacio</button>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="delete-letter">Borrar Letra</button>
+        <button class="btn" id="delete-word">Borrar Palabra</button>
+        <button class="btn" id="delete-phrase">Borrar Frase</button>
+        <button class="btn" id="read">Leer Frase</button>
+    </div>
+
+    <button class="btn alarm" id="alarm">AVISO</button>
 
     <div class="watermark">
         Creado por @campstechnology
@@ -202,30 +172,26 @@
     <script>
         let currentWord = '';
         let currentPhrase = '';
-        let isAlarmPlaying = false;
-        let audioContext = null;
-
-        const currentWordElement = document.getElementById('current-word');
-        const currentPhraseElement = document.getElementById('current-phrase');
-        const alarmButton = document.getElementById('alarm-button');
+        const wordDisplay = document.getElementById('word');
+        const phraseDisplay = document.getElementById('phrase');
 
         function updateDisplay() {
-            currentWordElement.textContent = currentWord;
-            currentPhraseElement.textContent = currentPhrase;
+            wordDisplay.textContent = currentWord;
+            phraseDisplay.textContent = currentPhrase;
         }
 
-        // Teclado
-        document.querySelectorAll('.key:not(.space-key)').forEach(key => {
-            key.addEventListener('click', () => {
-                if (!key.id) {
-                    currentWord += key.textContent;
+        // Letras
+        document.querySelectorAll('.keyboard .btn').forEach(button => {
+            if (!button.classList.contains('space')) {
+                button.addEventListener('click', () => {
+                    currentWord += button.textContent;
                     updateDisplay();
-                }
-            });
+                });
+            }
         });
 
         // Espacio
-        document.querySelector('.space-key').addEventListener('click', () => {
+        document.querySelector('.space').addEventListener('click', () => {
             if (currentWord) {
                 currentPhrase += (currentPhrase ? ' ' : '') + currentWord;
                 currentWord = '';
@@ -253,25 +219,29 @@
         });
 
         // Leer frase
-        document.getElementById('read-phrase').addEventListener('click', () => {
+        document.getElementById('read').addEventListener('click', () => {
             if (currentPhrase && 'speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(currentPhrase);
                 utterance.lang = 'es-ES';
-                window.speechSynthesis.speak(utterance);
+                speechSynthesis.speak(utterance);
             }
         });
 
         // Alarma
-        alarmButton.addEventListener('click', () => {
-            if (isAlarmPlaying) return;
+        let isPlaying = false;
+        let audioContext = null;
 
+        document.getElementById('alarm').addEventListener('click', () => {
+            if (isPlaying) return;
+            
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
 
-            isAlarmPlaying = true;
-            alarmButton.textContent = 'ALARMA SONANDO';
-            
+            isPlaying = true;
+            const button = document.getElementById('alarm');
+            button.textContent = 'ALARMA SONANDO';
+
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
 
@@ -293,12 +263,10 @@
             setTimeout(() => {
                 clearInterval(intervalId);
                 oscillator.stop();
-                isAlarmPlaying = false;
-                alarmButton.textContent = 'AVISO';
+                isPlaying = false;
+                button.textContent = 'AVISO';
             }, 3000);
         });
-
-        updateDisplay();
     </script>
 </body>
 </html>
